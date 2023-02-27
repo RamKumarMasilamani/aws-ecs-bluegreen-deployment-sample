@@ -1,17 +1,43 @@
 version: 0.2
-
+ 
 phases:
   install:
     runtime-versions:
       java: corretto8
-      docker: 18
+	    docker: 20
+  pre_build:
+    commands:
+	    - mvn clean install
+      - echo Logging in to Amazon ECR...
+	    - aws --version
+	    - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+      - REPOSITORY_URI=596560028005.dkr.ecr.ap-south-1.amazonaws.com/docker-demo
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+      # You can choose either the commit ID or the build ID as the information to be added to the IMAGE_TAG for a docker image.
+      # - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
       - echo Build started on `date`
-      - mvn clean install 
-      - docker build -t java .
+      - mvn package
+      - echo Building the Docker image...          
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo Pushing the Docker image...
-      
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '{"Version":"1.0","ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json
+      - printf '[{"name":"java-web-app","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+  files: 
+    # Amazon ECS blue/green deployments require an imageDetail.json file as an input to the deploy action.
+    - imageDetail.json
+    # Amazon ECS standard deployments require an imagedefinitions.json file as an input to the deploy action.
+    # - imagedefinitions.json
+cache:
+  paths:
+    - '/root/.m2/**/*'
