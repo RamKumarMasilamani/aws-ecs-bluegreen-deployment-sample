@@ -10,12 +10,12 @@ phases:
       # - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
   build:
     commands:
-      - REPOSITORY_URI= 596560028005.dkr.ecr.ap-south-1.amazonaws.com/docker_blue_green
+      #- REPOSITORY_URI= 596560028005.dkr.ecr.ap-south-1.amazonaws.com/docker_blue_green
       - echo Build started on `date`
       - mvn package
       - echo Building the Docker image...
-      - docker build -t $REPOSITORY_URI .
-      - docker tag $REPOSITORY_URI:latest
+      - docker build -t docker_blue_green .
+      - docker tag docker_blue_green:latest
   post_build:
     commands:
       - echo Build completed on `date`
