@@ -15,16 +15,17 @@ phases:
       - mvn package
       - echo Building the Docker image...
       - docker build -t docker_blue_green .
-      - docker tag docker_blue_green:latest
+      - docker tag docker_blue_green docker_blue_green:latest
   post_build:
     commands:
       - echo Build completed on `date`
       - echo Pushing the Docker images...
-      - docker push $REPOSITORY_URI:latest
+      #- docker push $REPOSITORY_URI:latest
       #- docker push $REPOSITORY_URI:$IMAGE_TAG
+      - docker tag docker_blue_green:latest 596560028005.dkr.ecr.ap-south-1.amazonaws.com/docker_blue_green:latest
       - echo Writing image definitions file...
-      - printf '{"Version":"1.0","ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json
-      - printf '[{"name":"java-web-app","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+      #- printf '{"Version":"1.0","ImageURI":"%s"}' $REPOSITORY_URI:$IMAGE_TAG > imageDetail.json
+      #- printf '[{"name":"java-web-app","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
 artifacts:
   files: 
     # Amazon ECS blue/green deployments require an imageDetail.json file as an input to the deploy action.
