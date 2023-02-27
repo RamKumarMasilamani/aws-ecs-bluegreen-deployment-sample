@@ -1,0 +1,29 @@
+{
+    "taskDefinition": "<TASK_DEFINITION>:1",
+    "cluster": "<CLUSTER_NAME>",
+    "loadBalancers": [
+        {
+            "targetGroupArn": "<ALB_TARGET_GROUP_ARN>",
+            "containerName": "java-web-app",
+            "containerPort": 8080
+        }
+    ],
+    "desiredCount": 2,
+    "launchType": "FARGATE",
+    "schedulingStrategy": "REPLICA",
+    "deploymentController": {
+        "type": "CODE_DEPLOY"
+    },
+    "networkConfiguration": {
+        "awsvpcConfiguration": {
+            "subnets": [
+                "<SUBNET_ID_1>",
+                "<SUBNET_ID_2>"
+            ],
+            "securityGroups": [
+                "<SECURITY_GROUP_ID>"
+            ],
+            "assignPublicIp": "ENABLED"
+        }
+    }
+}

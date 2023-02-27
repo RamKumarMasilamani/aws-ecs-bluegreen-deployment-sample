@@ -1,0 +1,25 @@
+{
+    "executionRoleArn": "arn:aws:iam::<your_account_id>:role/<repalce_this_with_ecs-sample-TaskExecutionRole>",
+    "containerDefinitions": [
+        {
+            "name": "java-web-app",
+            "image": "<IMAGE1_NAME>",
+            "essential": true,
+            "portMappings": [
+                {
+                    "hostPort": 8080,
+                    "protocol": "tcp",
+                    "containerPort": 8080
+                }
+            ]
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "networkMode": "awsvpc",
+    "cpu": "512",
+    "memory": "1024",
+    "taskRoleArn": "arn:aws:iam::<your_account_id>:role/<repalce_this_with_ecs-sample-ECSTaskRole>",
+    "family": "java-webapp-demo"
+}
