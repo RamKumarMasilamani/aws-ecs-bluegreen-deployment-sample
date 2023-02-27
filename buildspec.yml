@@ -15,7 +15,7 @@ phases:
       - mvn package
       - echo Building the Docker image...
       - docker build -t docker_blue_green .
-      - docker tag docker_blue_green docker_blue_green:latest
+      - docker tag docker_blue_green:latest 596560028005.dkr.ecr.ap-south-1.amazonaws.com/docker_blue_green:latest
   post_build:
     commands:
       - echo Build completed on `date`
